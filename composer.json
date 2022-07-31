@@ -1,0 +1,17 @@
+{
+  "name": "skillbox/framework",
+  "authors": [
+    {
+      "name": "Alexey Gushchin",
+      "email": "honyasaar@yandex.ru"
+    }
+  ],
+  "require": {
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "./app",
+      "Core\\": "./core"
+    }
+  }
+}
