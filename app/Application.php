@@ -3,6 +3,9 @@
 namespace App;
 
 use Core\ErrorHandler;
+use Core\Request;
+use Core\Session\SessionHandler;
+
 
 class Application
 {
@@ -10,33 +13,17 @@ class Application
     protected string $routesPath;
 
     protected static string $root;
-    protected $config = [];
 
-    /**
-     * @return string
-     */
-    public function getConfigPath(): string
-    {
-        return $this->configPath;
-    }
+    protected ?Request $request = null;
+    protected array $config = [];
 
-    /**
-     * @param string $configPath
-     * @return Application
-     */
-    public function setConfigPath(string $configPath): Application
+
+    public function setConfigPath(string $configPath)
     {
         $this->configPath = self::$root . $configPath;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getRoutesPath(): string
-    {
-        return $this->routesPath;
-    }
 
     /**
      * @param string $routesPath
@@ -58,28 +45,36 @@ class Application
 
     public function run()
     {
-        return $this;
+        $this->init()->startSession()->dispatch();
     }
 
-    public function startSession()
+    protected function startSession()
     {
-        session_save_path($this->configPath['app']['session_save_path']);
-        session_set_save_handler(new \SessionHandler());
+        session_save_path(self::$root . $this->config['app']['session_save_path']);
+        session_set_save_handler(new SessionHandler());
         session_start();
+
+        $_SESSION['authorized'] ??= false;
         return $this;
     }
 
-    public function dispatch()
+    protected function dispatch()
     {
+        Router::dispatch($this->request);
         return $this;
     }
 
-    public function init()
+    protected function init()
     {
+        $this->config = include $this->configPath;
+
+        $this->request = Request::init();
+        Router::setRoutes($this->routesPath);
+
         set_error_handler([ErrorHandler::class, 'error']);
         set_exception_handler([ErrorHandler::class, 'exception']);
 
-        $this->config = include $this->configPath;
+
         return $this;
     }
 

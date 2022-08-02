@@ -1,2 +1,4 @@
 <?php
-return [];
+return [
+    '/' => fn() =>'route works'
+];

@@ -2,17 +2,33 @@
 
 namespace App;
 
+
+use Core\Request;
+
 class Router
 {
 
-    protected array $routes = [];
+    protected static array $routes = [];
 
-    public Request $request;
-
-    public function __construct()
+    /**
+     * @param array $routes
+     */
+    public static function setRoutes(string $routesPath)
     {
-        $this->request = new Request();
+        self:: $routes = include $routesPath;
     }
+
+
+    public static function dispatch(?Request $request): void
+    {
+        if (self::$routes[$request->path()] ?? false) {
+            echo "exist request";
+
+        } else {
+            echo "not ffound page";
+        }
+    }
+
 
     public function get($string, array $array): void
     {
@@ -21,18 +37,5 @@ class Router
 
     public function post($string, array $array): void
     {
-    }
-
-    public function dispatch($url): void
-    {
-        $path = $this->request->getPath();
-        $method = $this->request->getMethod();
-        $callback = $this->routes[$method][$path] ?? false;
-
-        if ($callback === false) {
-            return "404";
-        }
-
-        return call_user_func($callback);
     }
 }
