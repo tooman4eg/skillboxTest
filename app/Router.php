@@ -3,7 +3,6 @@
 namespace App;
 
 use Core\Request;
-use \Exception;
 
 class Router
 {
@@ -28,7 +27,7 @@ class Router
         if (is_null(($handler))) {
             throw new \RuntimeException('not found');
         }
-        return call_user_func([new $handler[0], $handler[1]], []);
+        return call_user_func_array([new $handler[0], $handler[1]], []);
     }
 
     public function get($string, array $array): void

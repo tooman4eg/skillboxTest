@@ -12,9 +12,9 @@ require_once 'vendor/autoload.php';
 $router = new Router();
 
 $router->get('/',          [Controller::class, 'index']);
-$router->post('/products', [Controller::class, 'storeProduct']);
+$router->get('/products', [Controller::class, 'storeProduct']);
 $router->get('/products/create', [Controller::class, 'createProduct']);
-$router->post('/products/delete', [Controller::class, 'deleteProduct']);
+$router->get('/products/delete', [Controller::class, 'deleteProduct']);
 $application = new Application($router);
 
 $application->run();
