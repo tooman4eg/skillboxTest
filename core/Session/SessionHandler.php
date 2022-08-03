@@ -61,7 +61,7 @@ class SessionHandler implements \SessionHandlerInterface
      */
     public function write($id, $data)
     {
-//        echo "here";
+
 //        var_dump(file_put_contents($this->savePath . DIRECTORY_SEPARATOR . $id, $data)!== false);
        return   file_put_contents($this->savePath . DIRECTORY_SEPARATOR . $id, $data) !== false;
     }

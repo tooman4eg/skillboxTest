@@ -9,48 +9,25 @@ use Core\Session\SessionHandler;
 
 class Application
 {
-    protected string $configPath;
-    protected string $routesPath;
-
-    protected static string $root;
+    protected Router $router;
 
     protected ?Request $request = null;
-    protected array $config = [];
 
-
-    public function setConfigPath(string $configPath)
+    public function __construct(Router $router)
     {
-        $this->configPath = self::$root . $configPath;
-        return $this;
-    }
-
-
-    /**
-     * @param string $routesPath
-     * @return Application
-     */
-    public function setRoutesPath(string $routesPath): Application
-    {
-        $this->routesPath = self::$root . $routesPath;
-        return $this;
-    }
-
-    public function __construct()
-    {
-        self::$root = getcwd();
-        $this->configPath = self::$root . '/config/config.php';
-        $this->routesPath = self::$root . '/config/routes.php';
+        $this->router =  $router;
 
     }
 
     public function run()
     {
-        $this->init()->startSession()->dispatch();
+        $response = $this->init()->startSession()->dispatch();
+        $this->terminate($response);
     }
 
     protected function startSession()
     {
-        session_save_path(self::$root . $this->config['app']['session_save_path']);
+        session_save_path(getcwd().'/cache/sessions');
         session_set_save_handler(new SessionHandler());
         session_start();
 
@@ -60,23 +37,27 @@ class Application
 
     protected function dispatch()
     {
-        Router::dispatch($this->request);
-        return $this;
+        return $this->router->dispatch($this->request);
     }
 
     protected function init()
     {
-        $this->config = include $this->configPath;
-
+        $this->config =[
+            'app' => [
+                'session_save_path' => '/cache/sessions'
+            ]
+        ];
         $this->request = Request::init();
-        Router::setRoutes($this->routesPath);
 
         set_error_handler([ErrorHandler::class, 'error']);
         set_exception_handler([ErrorHandler::class, 'exception']);
 
-
         return $this;
     }
 
+    protected function terminate($response)
+    {
+        exit($response);
+    }
 
 }

@@ -1,7 +1,16 @@
 <?php
+namespace App\Models;
 
-class Product implements \App\ModelInterface
+class Product implements \App\Models\ModelInterface
 {
+
+    private $price;
+    private $name;
+
+    public function __construct()
+    {
+
+    }
 
     public function list()
     {

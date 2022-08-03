@@ -2,40 +2,42 @@
 
 namespace App;
 
-
 use Core\Request;
+use \Exception;
 
 class Router
 {
 
-    protected static array $routes = [];
+    protected array $routes = [];
 
     /**
-     * @param array $routes
      */
-    public static function setRoutes(string $routesPath)
+    public function getRoutes()
     {
-        self:: $routes = include $routesPath;
+        return $this->routes;
     }
 
 
-    public static function dispatch(?Request $request): void
+    /**
+     * @throws \Exception
+     */
+    public function dispatch(?Request $request)
     {
-        if (self::$routes[$request->path()] ?? false) {
-            echo "exist request";
+        $handler = $this->routes[$request->method()][$request->path()] ?? null;
 
-        } else {
-            echo "not ffound page";
+        if (is_null(($handler))) {
+            throw new \RuntimeException('not found');
         }
+        return call_user_func([new $handler[0], $handler[1]], []);
     }
-
 
     public function get($string, array $array): void
     {
-
+        $this->routes['GET'] [$string] = $array;
     }
 
     public function post($string, array $array): void
     {
+        $this->routes['POST'][$string] = $array;
     }
 }
