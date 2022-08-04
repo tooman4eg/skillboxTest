@@ -7,7 +7,10 @@
     }
   ],
   "require": {
-    "ext-http": "*"
+    "ext-http": "*",
+    "ext-json": "*",
+    "twbs/bootstrap": "4.1.3",
+    "twig/twig": "^3.4"
   },
   "autoload": {
     "psr-4": {
