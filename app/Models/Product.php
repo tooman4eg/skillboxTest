@@ -19,13 +19,11 @@ class Product implements \App\Models\ModelInterface
         if (isset($_SESSION['products'])) {
             return $_SESSION['products'];
         }
-
         return false;
     }
 
     public function create($fields)
     {
-//        var_dump($fields);
         if (isset($fields)) {
             $id = $_SESSION['nextId'] ?? 1;
             $product = [
@@ -34,24 +32,20 @@ class Product implements \App\Models\ModelInterface
                 'price'=>$fields['price'],
             ];
             $_SESSION['products'][$id] = $product;
-            echo " успешно создан товар $id : ".print_r($product,1);
+
             $_SESSION['nextId'] = ++$id;
 
-            return true;
+            return $id;
         }
         return false;
     }
 
     public function delete($id)
     {
-//        var_dump('delete' .$id);
-
         if (isset($_SESSION['products'][$id])) {
             unset($_SESSION['products'][$id]);
-            echo " успешно удален товар $id  ";
-            return true;
+            return $id;
         }
-        echo "nothing to delete";
         return false;
     }
 }

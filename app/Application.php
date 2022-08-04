@@ -9,25 +9,28 @@ use Core\Session\SessionHandler;
 
 class Application
 {
+    public const CACHE_SESSIONS = '/cache/sessions';
+
     protected Router $router;
 
     protected ?Request $request = null;
 
+
     public function __construct(Router $router)
     {
-        $this->router =  $router;
-
+        $this->router = $router;
     }
 
     public function run()
     {
         $response = $this->init()->startSession()->dispatch();
+
         $this->terminate($response);
     }
 
     protected function startSession()
     {
-        session_save_path(getcwd().'/cache/sessions');
+        session_save_path(getcwd() . self::CACHE_SESSIONS);
         session_set_save_handler(new SessionHandler());
         session_start();
 
@@ -42,11 +45,6 @@ class Application
 
     protected function init()
     {
-        $this->config =[
-            'app' => [
-                'session_save_path' => '/cache/sessions'
-            ]
-        ];
         $this->request = Request::init();
 
         set_error_handler([ErrorHandler::class, 'error']);

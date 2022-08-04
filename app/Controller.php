@@ -3,71 +3,53 @@
 namespace App;
 
 use App\Models\Product;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class Controller
 {
     public Product $product;
+    protected Environment $view;
 
-    public function __invoke()
+    public function __construct()
     {
         $this->product = new Product();
+        $this->view = new Environment(new FilesystemLoader('templates'));
     }
 
+    /**
+     * @throws \Twig\Error\SyntaxError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\LoaderError
+     */
     public function storeProduct()
     {
         $list = (new Product())->list();
-        echo "<h2>Products</h2>";
-        echo "<A href=/products/create> Add product</A>";
-        if ($list) {
-            echo "<table cellspacing='5' cellpadding='5' border='1' width='100%'>";
-            foreach ($list as $id => $product) {
-                echo "<tr>"
-                    . "<td>" . $id . "</td>"
-                    . "<td>" . $product['name'] . "</td>"
-                    . "<td>" . $product['price'] . "</td>"
-                    . "<td><a href ='/products/delete?id=$id'>delete</a></td>"
-                    . "</tr>";
-            }
-            echo "</table>";
-        } else
 
-            return "nothig found";
+        return $this->view->load('list.twig')->render(['products' => $list]);
     }
 
-    public function createProduct()
+    public function createProduct(): string
     {
-
         if (!empty ($_GET['name']) && !empty($_GET['price'])) {
-
-            (new Product())->create([
+            $id = (new Product())->create([
                 'name' => $_GET['name'],
                 'price' => $_GET['price']]);
         }
+        $result = isset($id) ? "Успешно создан товар id:$id" : '';
 
-        echo "
-<form method=\"post\">
-    <label>Product name</label><br>
-    <input type=\"text\" name=\"name\">
-    <label>price</label>
-    <input name=\"price\" type=\"text\">
-    <input type=\"submit\" value=\"add\">
-
-</form>";
-
-
+        return $this->view->load('form.twig')->render(['result' => $result]);
     }
 
     public function deleteProduct()
     {
+        $result = (new Product())->delete($_GET['id']);
 
-        $id = $_GET['id'];
-
-        $result = (new Product())->delete($id);
-        echo "<br><A HREF='/products'>Product list</A>";
+        return $this->view->load('delete_result.twig')->render(['result' => $result ? 'sussess' : 'fault']);
     }
 
     public function index()
     {
-        return "index ok";
+        return $this->view->load('list.twig')->render(['index.twig']);
     }
 }
