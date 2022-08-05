@@ -45,7 +45,8 @@ class Controller
     {
         $result = (new Product())->delete($_GET['id']);
 
-        return $this->view->load('delete_result.twig')->render(['result' => $result ? 'sussess' : 'fault']);
+        return $this->view->load('delete_result.twig')->render(['result' => $result ? 'success' : 'fault']);
+
     }
 
     public function index()

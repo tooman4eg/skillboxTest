@@ -30,7 +30,7 @@ class Application
 
     protected function startSession()
     {
-        session_save_path(Application . phpgetcwd());
+        session_save_path(getcwd());
         session_set_save_handler(new SessionHandler());
         session_start();
 
