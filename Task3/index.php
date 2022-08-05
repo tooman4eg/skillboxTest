@@ -11,7 +11,7 @@ require_once 'vendor/autoload.php';
 
 $router = new Router();
 
-$router->get('/',          [Controller::class, 'index']);
+$router->get('/', [Controller::class, 'index']);
 $router->get('/products', [Controller::class, 'storeProduct']);
 $router->get('/products/create', [Controller::class, 'createProduct']);
 $router->get('/products/delete', [Controller::class, 'deleteProduct']);
