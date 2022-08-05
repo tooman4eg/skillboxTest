@@ -1,0 +1,33 @@
+
+Часть1 Выберите все фирмы (названия), у которых есть товары определенного цвета (по id)
+
+Select distinct c.name, g.name, gc.color_id
+from companies c
+         JOIN goods g on g.company_id = c.id
+         JOIN good_color gc on g.id = gc.good_id
+where gc.color_id = 3
+
+
+
+Часть 2 Посчитайте количество товаров в определенной категории (по id) и определенного цвета (по id)
+
+select count(*) as count, gc.category_id, c.color_id from good_color c
+join good_category gc on gc.good_id = c.good_id
+ where
+ c.color_id =1 and gc.category_id =1
+ group by gc.category_id ,c.color_id
+
+
+Часть3: дерево категорий
+
+Первоначально приходит идея, когда в таблице всего три поля: id, name, parent_id
+Но в таком случае придется мучаться с рекурсивными запросами или  делать   несколько запросов.  Поэтому  лучшим вариантом решения будет денормализовать таблицу категорий
+ добавим поле path, в котором будет храниться путь от корневой категории до текущей категрии записи.  В виде : 0/23/112/43/
+Это облегчит запросы к бд В этом случае решение выглядит так :
+
+select *
+from category
+where path like (select CONCAT(path, id, '/', '%') as path
+                 from category c WHERE c.id = 2)
+
+Для реальных проектов можно также добавить еще полей для денормализации и удобства сортировки:   level — уровень иерархии в дереве и weight -  для специфичеоской  сортировки  одноуровневых элементов дерева.
